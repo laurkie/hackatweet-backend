@@ -5,7 +5,11 @@
  */
 
 var app = require('../app');
+<<<<<<< HEAD
 var debug = require('debug')('hackatweet-backend:server');
+=======
+var debug = require('debug')('backend:server');
+>>>>>>> 907b3a1aa51c642663dabd5e9c9f6a869848976d
 var http = require('http');
 
 /**
