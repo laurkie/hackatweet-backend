@@ -12,13 +12,26 @@ router.get('/', (req, res) =>{
 
 router.post('/newtweet', (req, res) => {
     const newTweet = new Tweet ({
-        user: req.body.user,
+        user: req.body.userId,
         content: req.body.content,
-        timestamp: req.body.timestamp,
+        time: req.body.time,
+        hashtags: req.body.hashtags,
         likeNb: req.body.likeNb,
         isLiked: req.body.isLiked,
-        hashtags: req.body.hashtags
+    })
+    newTweet.save().then(data => {
+        if(data){
+            res.json({result: true, tweet: data});
+        } else {
+            res.json({result: false});
+        }
     })
 })
+
+/* 
+router.put('/isLiked', (req, res) => {
+    Tweet.updateOne({content: req.body.content, time: req.body.time}, {isLiked: req.body.isLiked}).then()
+})
+*/
 
 module.exports = router;
