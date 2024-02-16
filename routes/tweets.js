@@ -7,31 +7,43 @@ const Tweet = require('../models/tweets');
 router.get('/', (req, res) =>{
     Tweet.find().then(data => {
         res.json(data);
-    })
-})
+    });
+});
 
 router.post('/newtweet', (req, res) => {
-    const newTweet = new Tweet ({
-        user: req.body.userId,
-        content: req.body.content,
-        time: req.body.time,
-        hashtags: req.body.hashtags,
-        likeNb: req.body.likeNb,
-        isLiked: req.body.isLiked,
-    })
-    newTweet.save().then(data => {
-        if(data){
-            res.json({result: true, tweet: data});
-        } else {
-            res.json({result: false});
-        }
-    })
-})
+    const { token, content, time, hashtags } = req.body;
+    User.findOne({ token })
+        .then(user => {
+            const newTweet = new Tweet ({editor: user._id, content, time, hashtags, likeNb: 0, likers: [] });
+            newTweet.save().then(data => {
+                if(data){
+                    res.json({result: true});
+                } else {
+                    res.json({result: false});
+                }
+            });
+        });
+});
 
-/* 
-router.put('/isLiked', (req, res) => {
-    Tweet.updateOne({content: req.body.content, time: req.body.time}, {isLiked: req.body.isLiked}).then()
-})
-*/
+router.put('/like', (req, res) => {
+    const { content, time, token } = req.body;
+    User.findOne({ token })
+        .then(liker => {
+            //Il faut vérifier si le liker est dans le tableau likers du document tweet
+            // => Si oui, l'enlever et diminuer likeNb de 1
+            // => Si non, l'ajouter et augmenter likeNb de 1
+            Tweet.findOne({ content, time })
+                .then(tweet => {
+                    if(tweet.likers.includes(liker._id)){
+                        Tweet.updateOne({ content, time }, { likers: this.likers.push(liker._id), likeNb: likeNb += 1 })
+                            .then(() => res.json({ result: true }));
+                    }
+                    else{
+                        Tweet.updateOne({ content, time }, { likers: this.likers.filter(userId => userId !== liker._id), likeNb: likeNb -= 1 })
+                            .then(() => res.json({ result: true }));
+                    }
+                });
+        });
+});
 
 module.exports = router;
