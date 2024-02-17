@@ -3,10 +3,24 @@ var router = express.Router();
 
 require('../models/connection');
 const Tweet = require('../models/tweets');
+const User = require('../models/users');
 
 router.get('/', (req, res) =>{
-    Tweet.find().then(data => {
-        res.json(data);
+    Tweet.find()
+        .populate('editor')
+        .then(data => {
+            const tweets = data.map(tweet => {
+                const { editor, time, content, likeNb } = tweet;
+                return ({
+                    userImg: editor.userImg,
+                    firstname: editor.firstname,
+                    username: editor.username,
+                    time,
+                    content,
+                    likeNb
+                });
+            });
+            res.json(tweets);
     });
 });
 

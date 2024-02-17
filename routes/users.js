@@ -12,7 +12,7 @@ router.post('/signup', function(req, res) {
       }
       else{
         const token = uid2(32);
-        const newUser = new User({ token, firstname, username, password, image: 'egg.png'});
+        const newUser = new User({ token, firstname, username, password, userImg: 'egg.png'});
         newUser.save()
           .then(data => res.json({ result: true, data }))
             .catch(error => res.json({ result: false, error }));
